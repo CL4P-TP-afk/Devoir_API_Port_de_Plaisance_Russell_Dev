@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title><%= typeof title !== 'undefined' ? title : 'Port de Plaisance' %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Port de Plaisance</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto">
+        <% if (user?.role === 'admin') { %>
+          <li class="nav-item"><a class="nav-link" href="/catways">Catways</a></li>
+          <li class="nav-item"><a class="nav-link" href="/users">Utilisateurs</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/reserver">Réserver</a></li>
+        <% } %>
+        <% if (user) { %>
+          
+        <% } %>
+        <li class="nav-item"><a class="nav-link" href="/docs">Documentation</a></li>
+      </ul>
+
+      <% if (user) { %>
+        <span class="navbar-text text-white me-2">👤 <%= user.name %> (<%= user.role %>)</span>
+        <a class="btn btn-outline-light" href="/auth/logout">Déconnexion</a>
+      <% } else { %>
+        <a class="btn btn-outline-light" href="/">Connexion</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+<main class="container mb-5">
+  <% if (typeof message !== 'undefined' && message) { %>
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <%= message %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+<% } %>
+
+
+  <%- body %>
+</main>
+
+<footer class="text-center text-muted py-3 border-top">
+  <small>&copy; <%= new Date().getFullYear() %> Port de Plaisance Russell</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
