@@ -1,0 +1,86 @@
+<% title = "Réservations" %>
+
+<div class="container mt-5">
+  <h2>
+    Réservations: <br>
+    Catway <%= catway.catwayNumber %> (<%= catway.catwayType %>)<br>
+    <%= catway.catwayState %><br>
+    <% if (catway.isReservable) { %>
+    <span class="badge bg-success">✅ Réservable</span>
+  <% } else { %>
+    <span class="badge bg-danger">❌ Non réservable</span>
+  <% } %>
+  </h2>
+  <p><a href="/catways" class="btn btn-outline-secondary btn-sm">← Retour à la liste des catways</a></p>
+
+  <% if (success) { %>
+    <div class="alert alert-success"><%= success %></div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th>Nom client</th>
+        <th>Bateau</th>
+        <th>Début</th>
+        <th>Fin</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% reservations.forEach(r => { %>
+        <tr>
+          <form action="/catways/<%= catway._id %>/reservations/<%= r._id %>?_method=PATCH" method="POST">
+            <td><input name="clientName" value="<%= r.clientName %>" class="form-control form-control-sm" required /></td>
+            <td><input name="boatName" value="<%= r.boatName %>" class="form-control form-control-sm" required /></td>
+            <td><input type="date" name="startDate" value="<%= r.startDate.toISOString().substring(0, 10) %>" class="form-control form-control-sm" required /></td>
+            <td><input type="date" name="endDate" value="<%= r.endDate.toISOString().substring(0, 10) %>" class="form-control form-control-sm" required /></td>
+            <td class="d-flex gap-1">
+              <button class="btn btn-success btn-sm">Modifier</button>
+          </form>
+              <form action="/catways/<%= catway._id %>/reservations/<%= r._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-danger btn-sm">Supprimer</button>
+              </form>
+            </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <% if (catway.isReservable) { %>
+  <h4 class="mt-5">Ajouter une réservation</h4>
+  <form action="/catways/<%= catway._id %>/reservations" method="POST">
+    <div class="mb-3">
+      <label>Nom du client</label>
+      <select name="clientName" class="form-select" required>
+        <option value="">-- Sélectionner un client --</option>
+        <% users.forEach(user => { %>
+          <option value="<%= user.name %>"><%= user.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Nom du bateau</label>
+      <input name="boatName" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label>Date de début</label>
+      <input type="date" name="startDate" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label>Date de fin</label>
+      <input type="date" name="endDate" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Créer</button>
+  </form>
+  <% } else { %>
+  <div class="alert alert-warning mt-5">
+    Ce catway n'est actuellement pas réservable. Le formulaire est désactivé.
+  </div>
+  <% } %>
+
+</div>
