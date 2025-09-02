@@ -1,0 +1,786 @@
+openapi: 3.0.3
+info:
+  title: API Port de Plaisance Russell
+  version: 1.0.0
+  description: |
+    API privée + interface serveur (EJS) pour gérer catways, réservations et utilisateurs.
+    ⚠️ Beaucoup d'endpoints renvoient des pages HTML ou des redirections (302) car l'UI est rendue côté serveur.
+    L’authentification se fait par JWT (envoyé dans un cookie `token` par l’app) ou dans l’en-tête `Authorization: Bearer <jwt>`.
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: Auth
+  - name: Catways
+  - name: Reservations
+  - name: Users
+  - name: Docs
+
+# Sécurité globale : par défaut, toutes les routes exigent un JWT
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Catway:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Mongo ObjectId
+        catwayNumber:
+          type: integer
+          minimum: 1
+        catwayType:
+          type: string
+          enum: [long, short]
+        catwayState:
+          type: string
+        isReservable:
+          type: boolean
+          default: true
+      required: [catwayNumber, catwayType]
+      example:
+        _id: 685e5fbc150618fda9b8e8b3
+        catwayNumber: 6
+        catwayType: short
+        catwayState: "En cours de réparation. Ne peut être réservée actuellement"
+        isReservable: false
+
+    Reservation:
+      type: object
+      properties:
+        _id:
+          type: string
+        catwayNumber:
+          type: integer
+        clientName:
+          type: string
+        boatName:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+      required: [catwayNumber, clientName, boatName, startDate, endDate]
+      example:
+        _id: 685e6003150618fda9b8e8c7
+        catwayNumber: 1
+        clientName: "Thomas Martin"
+        boatName: "Carolina"
+        startDate: "2024-05-21T06:00:00.000Z"
+        endDate:   "2024-10-27T06:00:00.000Z"
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [admin, user]
+      required: [name, email]
+      example:
+        _id: 684abcde150618fd11112222
+        name: "Capitaine Nemo"
+        email: "nemo@example.com"
+        role: "admin"
+
+paths:
+  /auth/login:
+    post:
+      security: []   # public
+      tags: [Auth]
+      summary: Connexion
+      description: |
+        Vérifie `email` + `password`.
+        En cas de succès, dépose un cookie `token` (JWT) et redirige vers `/dashboard`.
+        En cas d’échec, renvoie la page de login avec un message d’erreur (HTML).
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required: [email, password]
+      responses:
+        "302":
+          description: Redirection vers /dashboard (succès)
+        "200":
+          description: Page HTML (échec avec message)
+          content:
+            text/html: {}
+
+  /auth/logout:
+    get:
+      security: []   # public
+      tags: [Auth]
+      summary: Déconnexion
+      description: |
+        Supprime le cookie `token` et redirige vers `/`.
+      responses:
+        "302":
+          description: Redirection vers /
+
+  /dashboard:
+    get:
+      tags: [Reservations]
+      summary: Tableau de bord (HTML)
+      description: |
+        Page HTML listant les réservations en cours, à venir et terminées (avec messages).
+      x-roles: [admin]
+      responses:
+        "200":
+          description: Page HTML
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /docs:
+    get:
+      security: []   # public (affiche la doc même sans login)
+      tags: [Docs]
+      summary: Page "Documentation de l'API" (HTML)
+      description: |
+        Page EJS affichant Swagger UI en iframe, avec bouton "Retour".
+        Le Swagger UI natif est accessible sur `/api-docs`.
+      responses:
+        "200":
+          description: Page HTML
+          content:
+            text/html: {}
+
+  /catways:
+    get:
+      tags: [Catways]
+      summary: Liste des catways (HTML)
+      description: |
+        Page HTML listant les catways avec formulaire d’ajout, édition (état + réservable) et suppression.
+      x-roles: [admin]
+      responses:
+        "200":
+          description: Page HTML listant les catways.
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+    post:
+      tags: [Catways]
+      summary: Créer un catway (via formulaire HTML)
+      description: |
+        Valide l’unicité de `catwayNumber` et le type (`long`|`short`).
+        `isReservable` est transmis via checkbox (`on` si cochée).
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                catwayNumber:
+                  type: integer
+                  minimum: 1
+                catwayType:
+                  type: string
+                  enum: [long, short]
+                catwayState:
+                  type: string
+                isReservable:
+                  type: string
+                  description: "case à cocher ('on' si cochée)"
+              required: [catwayNumber, catwayType]
+      responses:
+        "302":
+          description: |
+            Redirection vers /catways (succès ou erreur via querystring)
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /catways/search:
+    post:
+      tags: [Catways]
+      summary: Rechercher un catway par numéro (HTML)
+      description: |
+        Soumet `searchNumber` et affiche le catway trouvé sous la liste (page HTML).
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                searchNumber:
+                  type: integer
+                  minimum: 1
+              required: [searchNumber]
+      responses:
+        "200":
+          description: Page HTML avec le résultat de recherche
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /catways/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Mongo ObjectId du catway
+        schema:
+          type: string
+    put:
+      tags: [Catways]
+      summary: Mettre à jour l’état et la réservabilité d’un catway
+      description: |
+        Met à jour `catwayState` et `isReservable` (conservés via champs cachés dans le formulaire).
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                catwayState:
+                  type: string
+                isReservable:
+                  type: string
+                  description: "valeur 'true' ou 'false' envoyée par le formulaire"
+              required: [catwayState]
+      responses:
+        "302":
+          description: Redirection vers /catways
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+    delete:
+      tags: [Catways]
+      summary: Supprimer un catway
+      x-roles: [admin]
+      responses:
+        "302":
+          description: Redirection vers /catways
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /catways/{id}/reservations:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Mongo ObjectId du catway (pas le catwayNumber)
+        schema:
+          type: string
+    get:
+      tags: [Reservations]
+      summary: Liste des réservations pour un catway (HTML)
+      description: |
+        Affiche la page des réservations d’un catway.
+
+        Règles métier (formulaire de création) :
+        - `clientName` doit correspondre à un `User.name` existant
+        - `catway.isReservable` doit être `true`
+        - Pas de chevauchement de dates pour un même `catwayNumber`
+      x-roles: [admin]
+      responses:
+        "200":
+          description: Page HTML
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+        "404":
+          description: Catway introuvable
+    post:
+      tags: [Reservations]
+      summary: Créer une réservation pour ce catway (via formulaire)
+      description: |
+        Règles métier :
+        - `clientName` ∈ Users.name (validation)
+        - Refus si `catway.isReservable === false`
+        - Refus si les dates se chevauchent pour le même `catwayNumber`
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                clientName:
+                  type: string
+                boatName:
+                  type: string
+                  minLength: 3
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+              required: [clientName, boatName, startDate, endDate]
+      responses:
+        "302":
+          description: |
+            Redirection vers /catways/{id}/reservations (succès/erreur)
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+        "404":
+          description: Catway introuvable
+
+  /catways/{id}/reservations/{idReservation}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Mongo ObjectId du catway
+      - name: idReservation
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Mongo ObjectId de la réservation
+    put:
+      tags: [Reservations]
+      summary: Mettre à jour une réservation
+      description: |
+        - Valide `clientName` (optionnel) contre `Users.name`
+        - Refuse si `catway.isReservable === false`
+        - Refuse si chevauchement de dates (hors réservation en cours)
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                clientName:
+                  type: string
+                boatName:
+                  type: string
+                  minLength: 3
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+      responses:
+        "302":
+          description: Redirection vers /catways/{id}/reservations
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+        "404":
+          description: Catway ou réservation introuvable
+    delete:
+      tags: [Reservations]
+      summary: Supprimer une réservation
+      x-roles: [admin]
+      responses:
+        "302":
+          description: Redirection vers /catways/{id}/reservations
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+        "404":
+          description: Catway ou réservation introuvable
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Liste/gestion des utilisateurs (HTML)
+      description: |
+        Page HTML avec :
+        - formulaire de création
+        - tableau éditable (nom, email, rôle, mot de passe optionnel)
+        - recherche par nom
+      x-roles: [admin]
+      responses:
+        "200":
+          description: Page HTML (liste + formulaires)
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+    post:
+      tags: [Users]
+      summary: Créer un utilisateur (via formulaire)
+      description: |
+        Validations :
+        - `name` min 3
+        - `email` format email + unicité
+        - `password` "fort" (min 3 + 1 minuscule + 1 majuscule + 1 chiffre)
+        - `role` ∈ {admin, user}
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [admin, user]
+              required: [name, email, password, role]
+      responses:
+        "302":
+          description: Redirection vers /users
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /users/search:
+    get:
+      tags: [Users]
+      summary: Rechercher un utilisateur par nom (HTML)
+      description: |
+        Recherche un utilisateur par son **name** (recherche insensible à la casse).
+        Renvoie la **page HTML** `/users` avec (ou sans) un bloc “résultat recherché”.
+      x-roles: [admin]
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+          description: Nom (ou fragment) à rechercher
+      responses:
+        "200":
+          description: Page HTML `/users` incluant le résultat de recherche (si trouvé).
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Mongo ObjectId de l'utilisateur
+    put:
+      tags: [Users]
+      summary: Mettre à jour un utilisateur
+      description: |
+        - `password` optionnel. S’il est fourni, il est (re)hashé.
+        - `role` optionnel ∈ {admin, user}
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [admin, user]
+              required: [name, email]
+      responses:
+        "302":
+          description: Redirection vers /users
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+        "404":
+          description: Introuvable
+    delete:
+      tags: [Users]
+      summary: Supprimer un utilisateur
+      x-roles: [admin]
+      responses:
+        "302":
+          description: Redirection vers /users
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /reserver:
+    get:
+      tags: [Reservations]
+      summary: Assistant admin – formulaire + listes (HTML)
+      description: |
+        Page EJS : formulaire de recherche de disponibilités + listes En cours/À venir/Terminées + résultats de recherche par client.
+      x-roles: [admin]
+      responses:
+        "200":
+          description: Page HTML
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+    post:
+      tags: [Reservations]
+      summary: Chercher des catways disponibles (HTML)
+      description: |
+        Filtre par `catwayType`, période (`startDate`–`endDate`), `userId` (client).
+        Retourne une page HTML listant les catways disponibles pour confirmation.
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: ObjectId du user (client)
+                clientName:
+                  type: string
+                  description: pré-rempli depuis l’utilisateur choisi
+                boatName:
+                  type: string
+                catwayType:
+                  type: string
+                  enum: [long, short]
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+              required: [userId, clientName, boatName, catwayType, startDate, endDate]
+      responses:
+        "200":
+          description: Page HTML avec la liste des catways disponibles
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /reserver/confirm:
+    get:
+      tags: [Reservations]
+      summary: Page de confirmation (HTML)
+      description: |
+        Affiche le récapitulatif client / bateau / période / catway avant création.
+      x-roles: [admin]
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: clientName
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: boatName
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          required: true
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          required: true
+        - in: query
+          name: catwayNumber
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Page HTML
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+    post:
+      tags: [Reservations]
+      summary: Création finale de réservation (redirection)
+      description: |
+        Re-vérifie les conflits avant insertion.
+        Redirige vers `/dashboard` en succès, ou `/reserver?message=…` en cas d’erreur.
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                clientName:
+                  type: string
+                boatName:
+                  type: string
+                catwayNumber:
+                  type: integer
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+              required: [clientName, boatName, catwayNumber, startDate, endDate]
+      responses:
+        "302":
+          description: |
+            Redirection (succès -> /dashboard, erreur -> /reserver?message=…)
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /reserver/search:
+    get:
+      tags: [Reservations]
+      summary: Rechercher les réservations d’un client (HTML)
+      description: |
+        Renvoie la page EJS avec résultats filtrés par `clientName` (insensible à la casse).
+      x-roles: [admin]
+      parameters:
+        - in: query
+          name: clientName
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Page HTML
+          content:
+            text/html: {}
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+
+  /reserver/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: ObjectId de la réservation
+    put:
+      tags: [Reservations]
+      summary: Modifier une réservation (avec validation de conflit)
+      description: |
+        Modifie `boatName`, `startDate`, `endDate`, `catwayNumber`. Refus en cas de conflit d’occupation.
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                boatName:
+                  type: string
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+                catwayNumber:
+                  type: integer
+              required: [boatName, startDate, endDate, catwayNumber]
+      responses:
+        "302":
+          description: Redirection vers /reserver?message=…
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
+        "404":
+          description: Réservation introuvable
+    delete:
+      tags: [Reservations]
+      summary: Supprimer une réservation
+      x-roles: [admin]
+      responses:
+        "302":
+          description: Redirection vers /reserver?message=…
+        "401":
+          description: Non authentifié
+        "403":
+          description: Admin requis
