@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "68879718dec9b351974b5fe5",
+    "name": "Admin",
+    "email": "admin@xxx.com",
+    "password": "$2b$10$i2ZXxgNieZXmbBQ4Bi2ruOXmUrNuDN1RSCNB4soJtwvFiN10cfgNS",
+    "role": "admin",
+    "createdAt": "2025-07-28T15:28:24.175Z",
+    "updatedAt": "2025-07-28T15:28:24.175Z"
+  },
+  {
+    "_id": "6889d1e90f33c0ef86903d1e",
+    "name": "Thomas Martin",
+    "email": "thomasmartin@xxx.com",
+    "password": "$2b$10$V4qjiTjcBSk1WcMuJGJ/fuoNQLcNjrfL6SwlVBCpKk3eVT85lJ06y",
+    "role": "user",
+    "createdAt": "2025-07-30T08:03:53.140Z",
+    "updatedAt": "2025-08-20T13:53:33.330Z"
+  },
+  {
+    "_id": "6889d2310f33c0ef86903d24",
+    "name": "Admin",
+    "email": "admin@port.com",
+    "password": "$2b$10$QbMfNSfxlSzesML13goZzOY2O/TM6PoxcyQdICNDijh2Zn/URSTJe",
+    "role": "admin",
+    "createdAt": "2025-07-30T08:05:05.012Z",
+    "updatedAt": "2025-08-20T13:49:41.762Z"
+  },
+  {
+    "_id": "6893694f7235d434dc3f75b4",
+    "name": "Capitainerie Russell",
+    "email": "capitainerie.russell@xxx.com",
+    "password": "$2b$10$wO6GJ8Al0Yb3puQVn1ZH8up0S8fJsQWfTAxiGkqTFl1Oyazr1glyO",
+    "role": "admin",
+    "createdAt": "2025-08-06T14:40:15.397Z",
+    "updatedAt": "2025-08-20T13:52:49.161Z"
+  },
+  {
+    "_id": "68959c85e87ddcee4903757e",
+    "name": "Jacky Snow",
+    "email": "jackysnow@xxx.com",
+    "password": "$2b$10$LAytaGosuDgkrSAzGEv.mevN/HOOu9mj.DK5J6Ny4EjIPBkc839AK",
+    "role": "user",
+    "createdAt": "2025-08-08T06:43:17.889Z",
+    "updatedAt": "2025-08-20T13:53:22.212Z"
+  },
+  {
+    "_id": "6895ad33e87ddcee49037584",
+    "name": "John Doe",
+    "email": "johndoe@xxx.com",
+    "password": "$2b$10$9Y4AlRBNP2rzRax8sQ3iseUngR8Y7QBnpJWTUxEvPUdqr.JjDe48y",
+    "role": "user",
+    "createdAt": "2025-08-08T07:54:27.213Z",
+    "updatedAt": "2025-08-20T13:54:06.271Z"
+  },
+  {
+    "_id": "6895ad8ce87ddcee4903758b",
+    "name": "Margareth Wurtz",
+    "email": "margarethwurtz@xxx.com",
+    "password": "$2b$10$OT6V1CX/rN.wc545jXWBCu7RmHqFeBt1ZLXbOOCt2oZzrdZNJXili",
+    "role": "user",
+    "createdAt": "2025-08-08T07:55:56.504Z",
+    "updatedAt": "2025-08-20T13:53:54.733Z"
+  },
+  {
+    "_id": "6895adc1e87ddcee4903758f",
+    "name": "Ralph Laurent",
+    "email": "ralphlaurent@xxx.com",
+    "password": "$2b$10$zuOIGcTePHreAkpqO1Nwb.jJeWt7CKuwNZE4u/R2EL95F71kCcUim",
+    "role": "user",
+    "createdAt": "2025-08-08T07:56:49.440Z",
+    "updatedAt": "2025-08-20T13:53:45.097Z"
+  },
+  {
+    "_id": "6895addbe87ddcee49037593",
+    "name": "Jack Sparrow",
+    "email": "jacksparrow@xxx.com",
+    "password": "$2b$10$9eAUqBrklM5Z3yvMmA3Pg.iiUCAEwIDza4jMvdqPRaTNWSclOJjo6",
+    "role": "user",
+    "createdAt": "2025-08-08T07:57:15.097Z",
+    "updatedAt": "2025-08-20T13:53:06.033Z"
+  },
+  {
+    "_id": "68a4552edd6e56eec6fd5b65",
+    "name": "Albator Great",
+    "email": "albatorgreat@xxx.com",
+    "password": "$2b$10$DQoGc.mIsBX44f/S8IVFruRvOEYKkN9s1Hxd.TbIDYafbDdsfqMwu",
+    "role": "user",
+    "createdAt": "2025-08-19T10:42:54.710Z",
+    "updatedAt": "2025-08-20T13:52:14.566Z"
+  }
+]

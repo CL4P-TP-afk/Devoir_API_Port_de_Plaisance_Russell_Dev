@@ -1,0 +1,90 @@
+[
+  {
+    "_id": "685e6003150618fda9b8e8c7",
+    "catwayNumber": 1,
+    "clientName": "Thomas Martin",
+    "boatName": "Carolina",
+    "startDate": "2024-05-21T06:00:00Z",
+    "endDate": "2024-10-27T06:00:00Z"
+  },
+  {
+    "_id": "685e6003150618fda9b8e8c8",
+    "catwayNumber": 2,
+    "clientName": "John Doe",
+    "boatName": "Groeland",
+    "startDate": "2024-05-18T06:00:00Z",
+    "endDate": "2024-11-30T06:00:00Z"
+  },
+  {
+    "_id": "685e6003150618fda9b8e8c9",
+    "catwayNumber": 3,
+    "clientName": "Margareth Wurtz",
+    "boatName": "Sirène",
+    "startDate": "2024-06-20T06:00:00Z",
+    "endDate": "2024-08-27T06:00:00Z"
+  },
+  {
+    "_id": "685e6003150618fda9b8e8ca",
+    "catwayNumber": 7,
+    "clientName": "Ralph Laurent",
+    "boatName": "Surcouf",
+    "startDate": "2024-07-01T06:00:00Z",
+    "endDate": "2024-10-13T06:00:00Z"
+  },
+  {
+    "_id": "685e6003150618fda9b8e8cb",
+    "catwayNumber": 11,
+    "clientName": "Jack Sparrow",
+    "boatName": "Black perl",
+    "startDate": "2024-08-13T06:00:00Z",
+    "endDate": "2024-09-13T06:00:00Z"
+  },
+  {
+    "_id": "685e6003150618fda9b8e8cc",
+    "catwayNumber": 13,
+    "clientName": "Jacky Snow",
+    "boatName": "Léandra",
+    "startDate": "2024-09-18T06:00:00Z",
+    "endDate": "2024-12-23T06:00:00Z"
+  },
+  {
+    "_id": "6895b099e87ddcee490375a3",
+    "catwayNumber": 5,
+    "clientName": "Jack Sparrow",
+    "boatName": "black perl",
+    "startDate": "2025-08-08T00:00:00.000Z",
+    "endDate": "2025-08-30T00:00:00.000Z"
+  },
+  {
+    "_id": "6895b0e8e87ddcee490375ad",
+    "catwayNumber": 13,
+    "clientName": "Jacky Snow",
+    "boatName": "Léandra",
+    "startDate": "2025-11-26T00:00:00.000Z",
+    "endDate": "2026-10-31T00:00:00.000Z"
+  },
+  {
+    "_id": "6895e816f78caf8418c884a7",
+    "catwayNumber": 2,
+    "clientName": "Margareth Wurtz",
+    "boatName": "Sirène",
+    "startDate": "2025-08-08T00:00:00.000Z",
+    "endDate": "2025-08-15T00:00:00.000Z"
+  },
+  {
+    "_id": "68a45598dd6e56eec6fd5b73",
+    "catwayNumber": 10,
+    "clientName": "Albator Great",
+    "boatName": "Death Shadow",
+    "startDate": "2025-08-06T00:00:00.000Z",
+    "endDate": "2025-11-07T00:00:00.000Z"
+  },
+  {
+    "_id": "68a58bed1ee56457f5195fd3",
+    "catwayNumber": 2,
+    "clientName": "John Doe",
+    "boatName": "teast",
+    "startDate": "2025-08-22T00:00:00.000Z",
+    "endDate": "2025-08-31T00:00:00.000Z"
+  }
+]
