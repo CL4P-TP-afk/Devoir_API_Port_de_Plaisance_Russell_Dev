@@ -1,0 +1,147 @@
+<% title = "Gestion des Catways" %>
+
+<h1 class="mb-4">Gestion des Catways</h1>
+
+<% if (query.success) { %>
+  <div class="alert alert-success">Catway ajouté avec succès</div>
+<% } %>
+
+<% if (query.error) { %>
+  <div class="alert alert-danger"><%= query.error %></div>
+<% } %>
+
+<% if (query.successUpdate) { %>
+  <div class="alert alert-success">Catway modifié avec succès</div>
+<% } %>
+
+<% if (query.successDelete) { %>
+  <div class="alert alert-success">Catway supprimé avec succès</div>
+<% } %>
+
+<h2>Ajouter un catway</h2>
+<form action="/catways" method="POST" class="mb-4">
+  <div class="mb-3">
+    <label class="form-label">Numéro</label>
+    <input type="number" class="form-control" name="catwayNumber" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Type</label>
+    <select class="form-select" name="catwayType" required>
+      <option value="short">Short</option>
+      <option value="long">Long</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">État</label>
+    <input type="text" class="form-control" name="catwayState">
+  </div>
+  <div class="form-check mb-3">
+  <input class="form-check-input" type="checkbox" name="isReservable" id="isReservable" checked>
+  <label class="form-check-label" for="isReservable">
+    Réservable ?
+  </label>
+</div>
+
+  <button type="submit" class="btn btn-success">Ajouter</button>
+</form>
+
+<h2>Rechercher un catway</h2>
+<form action="/catways/search" method="POST" class="mb-4">
+  <div class="mb-3">
+    <label class="form-label">Numéro de catway</label>
+    <input type="number" class="form-control" name="searchNumber" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Rechercher</button>
+</form>
+
+<% if (typeof searchedCatway !== 'undefined' && searchedCatway) { %>
+  <h3>Résultat de la recherche</h3>
+  <table class="table table-bordered mb-5">
+    <thead>
+      <tr>
+        <th>Numéro</th>
+        <th>Type</th>
+        <th>État</th>
+        <th>Réservable</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= searchedCatway.catwayNumber %></td>
+        <td><%= searchedCatway.catwayType %></td>
+        <td><%= searchedCatway.catwayState %></td>
+        <td>
+          <form action="/catways/<%= searchedCatway._id %>?_method=PUT" method="POST">
+            <input type="hidden" name="catwayState" value="<%= searchedCatway.catwayState %>">
+            <input type="hidden" name="isReservable" value="<%= !searchedCatway.isReservable %>">
+            <button type="submit" class="btn btn-sm <%= searchedCatway.isReservable ? 'btn-outline-success' : 'btn-outline-secondary' %>">
+              <%= searchedCatway.isReservable ? '✅ Oui' : '❌ Non' %>
+            </button>
+          </form>
+        </td>
+        <td>
+          <form action="/catways/<%= searchedCatway._id %>?_method=PUT" method="POST" class="d-inline">
+            <input type="text" name="catwayState" placeholder="Nouvel état" required>
+            <input type="hidden" name="isReservable" value="<%= searchedCatway.isReservable %>">
+            <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
+          </form>
+          <form action="/catways/<%= searchedCatway._id %>?_method=DELETE" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+          </form>
+          <a href="/catways/<%= searchedCatway._id %>/reservations" class="btn btn-info btn-sm">Réservations</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<% } %>
+
+<h2 class="mt-5">Liste des catways</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Numéro</th>
+      <th>Type</th>
+      <th>État</th>
+      <th>Réservable</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% catways.forEach(c => { %>
+      <tr>
+        <td><%= c.catwayNumber %></td>
+        <td><%= c.catwayType %></td>
+        <td><%= c.catwayState %></td>
+        
+        <td>
+          <!-- Réservable -->         
+          <form action="/catways/<%= c._id %>?_method=PUT" method="POST">
+          <input type="hidden" name="catwayState" value="<%= c.catwayState %>">
+          <input type="hidden" name="isReservable" value="<%= !c.isReservable %>">
+          <button type="submit" class="btn btn-sm <%= c.isReservable ? 'btn-outline-success' : 'btn-outline-secondary' %>" title="Cliquez pour <%= c.isReservable ? 'désactiver' : 'activer' %>">
+            <%= c.isReservable ? '✅ Oui' : '❌ Non' %>
+          </button>
+        </td>
+
+        <!-- Modifier -->
+        <td>
+        </form>
+        <form action="/catways/<%= c._id %>?_method=PUT" method="POST" class="d-inline">
+          <input type="text" name="catwayState" placeholder="Nouvel état" required>
+          <input type="hidden" name="isReservable" value="<%= c.isReservable %>"> <!-- Important pour ne pas écraser -->
+          <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
+        </form>
+          
+        <!-- Supprimer -->
+        <form action="/catways/<%= c._id %>?_method=DELETE" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+        </form>
+
+        <!-- Lien vers réservations -->
+          <a href="/catways/<%= c._id %>/reservations" class="btn btn-info btn-sm">Réservations</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
