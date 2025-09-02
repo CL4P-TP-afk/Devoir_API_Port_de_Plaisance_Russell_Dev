@@ -1,0 +1,221 @@
+<% title = "Réserver un catway" %>
+
+<h1>Faire une réservation:</h1>
+
+<% if (message) { %>
+  <div class="alert alert-warning"><%= message %></div>
+<% } %>
+
+<!-- 📝 Formulaire de création -->
+<form method="POST" action="/reserver">
+  <input type="hidden" id="clientName" name="clientName" value="<%= formData.clientName || '' %>">
+
+  <div class="mb-3">
+    <label>Utilisateur</label>
+    <select class="form-select" name="userId" id="userId" required onchange="updateClientName()">
+      <option value="">-- Choisir un utilisateur --</option>
+      <% users.forEach(u => { %>
+        <option value="<%= u._id %>" data-name="<%= u.name %>" <%= formData.userId === String(u._id) ? 'selected' : '' %>>
+          <%= u.name %> (<%= u.email %>)
+        </option>
+      <% }) %>
+    </select>
+  </div>
+
+  <input type="text" name="boatName" placeholder="Nom du bateau" class="form-control mb-2" value="<%= formData.boatName || '' %>" required>
+
+  <select name="catwayType" class="form-select mb-2" required>
+    <option value="">-- Type de catway --</option>
+    <option value="short" <%= formData.catwayType === 'short' ? 'selected' : '' %>>Short</option>
+    <option value="long" <%= formData.catwayType === 'long' ? 'selected' : '' %>>Long</option>
+  </select>
+
+  <input type="date" name="startDate" class="form-control mb-2" value="<%= formData.startDate || '' %>" required>
+  <input type="date" name="endDate" class="form-control mb-3" value="<%= formData.endDate || '' %>" required>
+
+  <button class="btn btn-primary">Chercher des catways disponibles</button>
+</form>
+
+<script>
+  function updateClientName() {
+    const select = document.getElementById('userId');
+    const selectedOption = select.options[select.selectedIndex];
+    const name = selectedOption.getAttribute('data-name');
+    document.getElementById('clientName').value = name || '';
+  }
+  document.addEventListener('DOMContentLoaded', updateClientName);
+</script>
+
+<!-- ✅ Résultats de recherche de catways -->
+<% if (availableCatways.length > 0) { %>
+  <hr>
+  <h3>Catways disponibles</h3>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Numéro</th>
+        <th>Type</th>
+        <th>État</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% availableCatways.forEach(c => { %>
+        <tr>
+          <td><%= c.catwayNumber %></td>
+          <td><%= c.catwayType %></td>
+          <td><%= c.catwayState || '-' %></td>
+          <td>
+            <form action="/reserver/confirm" method="GET">
+              <% for (let key in formData) { %>
+                <input type="hidden" name="<%= key %>" value="<%= formData[key] %>">
+              <% } %>
+              <input type="hidden" name="catwayNumber" value="<%= c.catwayNumber %>">
+              <button class="btn btn-success btn-sm">Réserver ce catway</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<!-- 🔍 Section indépendante : Recherche de réservations par client -->
+<hr>
+<h2 class="mt-5">🔍 Rechercher une réservation par client</h2>
+
+<form class="mb-4" method="GET" action="/reserver/search">
+  <div class="input-group">
+    <input type="text" class="form-control" name="clientName" placeholder="Nom du client" value="<%= searchQuery || '' %>" required>
+    <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+  </div>
+</form>
+
+<% if (searchResults && searchResults.length > 0) { %>
+  <h4>Résultats de la recherche pour : "<%= searchQuery %>"</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Bateau</th>
+        <th>Catway</th>
+        <th>Début</th>
+        <th>Fin</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% searchResults.forEach(r => { %>
+        <tr>
+          <form action="/reserver/<%= r._id %>?_method=PUT" method="POST" class="align-middle">
+            <td><%= r.clientName %></td>
+            <td><input type="text" name="boatName" value="<%= r.boatName %>" class="form-control form-control-sm"></td>
+            <td>
+              <select name="catwayNumber" class="form-select form-select-sm">
+                <% allCatways.forEach(c => { %>
+                  <option value="<%= c.catwayNumber %>" <%= c.catwayNumber === r.catwayNumber ? 'selected' : '' %>><%= c.catwayNumber %></option>
+                <% }) %>
+              </select>
+            </td>
+            <td><input type="date" name="startDate" value="<%= r.startDate.toISOString().substring(0,10) %>" class="form-control form-control-sm"></td>
+            <td><input type="date" name="endDate" value="<%= r.endDate.toISOString().substring(0,10) %>" class="form-control form-control-sm"></td>
+            <td class="d-flex gap-1">
+              <button type="submit" class="btn btn-sm btn-primary">💾</button>
+          </form>
+          <form action="/reserver/<%= r._id %>?_method=DELETE" method="POST">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette réservation ?')">🗑</button>
+          </form>
+            </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } else if (searchQuery) { %>
+  <p>Aucune réservation trouvée pour "<%= searchQuery %>"</p>
+<% } %>
+
+<!-- 📋 Section finale : Toutes les réservations -->
+<hr>
+<h2 class="mt-5">📋 Toutes les réservations</h2>
+
+<% ['En cours', 'À venir', 'Terminées'].forEach(status => {
+     const group = reservations[status];
+     if (group.length) { %>
+  <h4 class="mt-4"><%= status %></h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Bateau</th>
+        <th>Catway</th>
+        <th>Début</th>
+        <th>Fin</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% group.forEach(r => { 
+           const isPast = status === 'Terminées';
+      %>
+        <tr>
+          <% if (!isPast) { %>
+            <form action="/reserver/<%= r._id %>?_method=PUT" method="POST" class="align-middle">
+          <% } %>
+          
+            <td><%= r.clientName %></td>
+
+            <td>
+              <% if (isPast) { %>
+                <%= r.boatName %>
+              <% } else { %>
+                <input type="text" name="boatName" value="<%= r.boatName %>" class="form-control form-control-sm">
+              <% } %>
+            </td>
+
+            <td>
+              <% if (isPast) { %>
+                <%= r.catwayNumber %>
+              <% } else { %>
+                <select name="catwayNumber" class="form-select form-select-sm">
+                  <% (allowedCatwaysByResId[r._id] || []).forEach(c => { %>
+                  <option value="<%= c.catwayNumber %>" <%= c.catwayNumber === r.catwayNumber ? 'selected' : '' %>>
+                    <%= c.catwayNumber %>
+                  </option>
+                  <% }) %>
+                </select>
+
+              <% } %>
+            </td>
+
+            <td>
+              <% if (isPast) { %>
+                <%= r.startDate.toISOString().substring(0,10) %>
+              <% } else { %>
+                <input type="date" name="startDate" value="<%= r.startDate.toISOString().substring(0,10) %>" class="form-control form-control-sm">
+              <% } %>
+            </td>
+
+            <td>
+              <% if (isPast) { %>
+                <%= r.endDate.toISOString().substring(0,10) %>
+              <% } else { %>
+                <input type="date" name="endDate" value="<%= r.endDate.toISOString().substring(0,10) %>" class="form-control form-control-sm">
+              <% } %>
+            </td>
+
+            <td class="d-flex gap-1">
+              <% if (!isPast) { %>
+                <button type="submit" class="btn btn-sm btn-primary">💾</button>
+                </form>
+              <% } %>
+
+              <form action="/reserver/<%= r._id %>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette réservation ?')">🗑</button>
+              </form>
+            </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } }) %>
+
