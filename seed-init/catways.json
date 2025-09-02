@@ -1,0 +1,177 @@
+[
+  {
+    "_id": "685e5fbc150618fda9b8e8b8",
+    "catwayNumber": 11,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8bb",
+    "catwayNumber": 14,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8c2",
+    "catwayNumber": 21,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b0",
+    "catwayNumber": 3,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b1",
+    "catwayNumber": 4,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b3",
+    "catwayNumber": 6,
+    "catwayType": "short",
+    "catwayState": "En cours de réparation. Ne peut être réservée actuellement",
+    "isReservable": false
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b4",
+    "catwayNumber": 7,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b5",
+    "catwayNumber": 8,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8bf",
+    "catwayNumber": 18,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8c0",
+    "catwayNumber": 19,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8c1",
+    "catwayNumber": 20,
+    "catwayType": "long",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8c3",
+    "catwayNumber": 22,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8c4",
+    "catwayNumber": 23,
+    "catwayType": "short",
+    "catwayState": "La bite d'amarrage est légèrement désolidarisée",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8ae",
+    "catwayNumber": 1,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8af",
+    "catwayNumber": 2,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b2",
+    "catwayNumber": 5,
+    "catwayType": "long",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8bc",
+    "catwayNumber": 15,
+    "catwayType": "long",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8bd",
+    "catwayNumber": 16,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8be",
+    "catwayNumber": 17,
+    "catwayType": "short",
+    "catwayState": "2 planches bougent lorsqu'on marche dessus",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b6",
+    "catwayNumber": 9,
+    "catwayType": "long",
+    "catwayState": "Plusieurs grandes tâches de peinture bleue sur le ponton",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b7",
+    "catwayNumber": 10,
+    "catwayType": "long",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8b9",
+    "catwayNumber": 12,
+    "catwayType": "short",
+    "catwayState": "grosse tâche d'huile et trou en fin de ponton",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8ba",
+    "catwayNumber": 13,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "685e5fbc150618fda9b8e8c5",
+    "catwayNumber": 24,
+    "catwayType": "short",
+    "catwayState": "bon état",
+    "isReservable": true
+  },
+  {
+    "_id": "689da12929821cd28752d3d2",
+    "catwayNumber": 25,
+    "catwayType": "long",
+    "catwayState": "neuf en attente de la vérification de conformité",
+    "isReservable": false
+  }
+]
