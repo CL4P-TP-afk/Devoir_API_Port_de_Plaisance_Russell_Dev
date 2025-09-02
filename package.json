@@ -1,0 +1,37 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "env-cmd -f ./env/.env nodemon ./bin/www",
+    "prod": "env-cmd -f ./env/.env.prod node ./bin/www",
+    "dump": "env-cmd -f ./env/.env node scripts/dump.js",
+    "seed": "env-cmd -f ./env/.env node scripts/seed.js --mode=safe",
+    "seed:init": "env-cmd -f ./env/.env node scripts/seed-init.js",
+    "seed:reset": "env-cmd -f ./env/.env node scripts/seed.js --mode=reset"
+  },
+  "dependencies": {
+    
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.16.0",
+    "morgan": "~1.9.1",
+    
+    
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
