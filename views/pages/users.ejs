@@ -1,0 +1,128 @@
+<% title = "Utilisateurs" %>
+
+<div class="container mt-5">
+  <h2 class="mb-4">Gestion des utilisateurs</h2>
+
+  <% if (message) { %>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Formulaire d'ajout -->
+  <form action="/users" method="POST" class="row g-3 mb-4">
+    <div class="col-md-3">
+      <input type="text" name="name" class="form-control" placeholder="Nom" required>
+    </div>
+    <div class="col-md-3">
+      <input type="email" name="email" class="form-control" placeholder="Email" required>
+    </div>
+    <div class="col-md-2">
+      <input type="password" name="password" class="form-control" placeholder="Mot de passe" required>
+    </div>
+    <div class="col-md-2">
+      <select name="role" class="form-select" required>
+        <option value="user">Utilisateur</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success w-100" type="submit">Ajouter</button>
+    </div>
+  </form>
+
+<!-- Formulaire de recherche -->
+<form action="/users/search" method="GET" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <input type="text" name="name" class="form-control" placeholder="Rechercher par nom">
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-outline-primary w-100" type="submit">🔍 Rechercher</button>
+  </div>
+</form>
+<% if (searchedUser) { %>
+  <h3>Résultat de la recherche</h3>
+  <table class="table table-bordered mb-5">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Mot de passe</th>
+        <th>Rôle</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <form action="/users/<%= searchedUser._id %>?_method=PUT" method="POST">
+          <td>
+            <input type="text" name="name" value="<%= searchedUser.name %>" class="form-control" required>
+          </td>
+          <td>
+            <input type="email" name="email" value="<%= searchedUser.email %>" class="form-control" required>
+          </td>
+          <td>
+            <input type="password" name="password" class="form-control" placeholder="Nouveau mot de passe">
+          </td>
+          <td>
+            <select name="role" class="form-select">
+              <option value="user" <%= searchedUser.role === 'user' ? 'selected' : '' %>>Utilisateur</option>
+              <option value="admin" <%= searchedUser.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            </select>
+          </td>
+          <td class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">💾 Enregistrer</button>
+        </form>
+            <form action="/users/<%= searchedUser._id %>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cet utilisateur ?')">🗑 Supprimer</button>
+            </form>
+          </td>
+      </tr>
+    </tbody>
+  </table>
+<% } %>
+
+
+  <!-- Tableau des utilisateurs -->
+  <table class="table table-striped align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Mot de passe</th>
+        <th>Rôle</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(user => { %>
+        <tr>
+          <form action="/users/<%= user._id %>?_method=PUT" method="POST">
+            <td>
+              <input type="text" name="name" value="<%= user.name %>" class="form-control" required>
+            </td>
+            <td>
+              <input type="email" name="email" value="<%= user.email %>" class="form-control" required>
+            </td>
+            <td>
+              <input type="password" name="password" class="form-control" placeholder="Nouveau mot de passe (optionnel)">
+            </td>
+            <td>
+              <select name="role" class="form-select">
+                <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>Utilisateur</option>
+                <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+              </select>
+            </td>
+            <td class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-sm">💾 Enregistrer</button>
+          </form>
+              <form action="/users/<%= user._id %>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cet utilisateur ?')">🗑 Supprimer</button>
+              </form>
+            </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
