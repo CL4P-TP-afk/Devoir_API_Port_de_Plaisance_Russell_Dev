@@ -1,0 +1,96 @@
+
+<% title = "Tableau de bord" %>
+
+<h1 class="mb-4">Bienvenue <%= user?.name %></h1>
+<p><strong>Email :</strong> <%= user?.email %></p>
+<p><strong>Date :</strong> <%= today %></p>
+
+<hr>
+
+<h3>📌 Réservations en cours</h3>
+<% if (currentReservations && currentReservations.length > 0) { %>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Bateau</th>
+        <th>Catway</th>
+        <th>Début</th>
+        <th>Fin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% currentReservations.forEach(r => { %>
+        <tr>
+          <td><%= r.clientName %></td>
+          <td><%= r.boatName %></td>
+          <td><%= r.catwayNumber %></td>
+          <td><%= new Date(r.startDate).toLocaleDateString('fr-FR') %></td>
+          <td><%= new Date(r.endDate).toLocaleDateString('fr-FR') %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } else { %>
+  <p class="text-muted">Aucune réservation en cours.</p>
+<% } %>
+
+<h3 class="mt-5">📅 Réservations à venir</h3>
+<% if (upcomingReservations && upcomingReservations.length > 0) { %>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Bateau</th>
+        <th>Catway</th>
+        <th>Début</th>
+        <th>Fin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% upcomingReservations.forEach(r => { %>
+        <tr>
+          <td><%= r.clientName %></td>
+          <td><%= r.boatName %></td>
+          <td><%= r.catwayNumber %></td>
+          <td><%= new Date(r.startDate).toLocaleDateString('fr-FR') %></td>
+          <td><%= new Date(r.endDate).toLocaleDateString('fr-FR') %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } else { %>
+  <p class="text-muted">Aucune réservation à venir.</p>
+<% } %>
+
+<h3 class="mt-5 text-danger">🗑 Réservations expirées</h3>
+<% if (expiredReservations && expiredReservations.length > 0) { %>
+  <form action="/dashboard/purge-expired" method="POST" onsubmit="return confirm('Confirmer la suppression des réservations expirées ?')">
+    <button type="submit" class="btn btn-danger mb-3">Tout supprimer</button>
+  </form>
+
+  <table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Bateau</th>
+        <th>Catway</th>
+        <th>Début</th>
+        <th>Fin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% expiredReservations.forEach(r => { %>
+        <tr>
+          <td><%= r.clientName %></td>
+          <td><%= r.boatName %></td>
+          <td><%= r.catwayNumber %></td>
+          <td><%= new Date(r.startDate).toLocaleDateString('fr-FR') %></td>
+          <td><%= new Date(r.endDate).toLocaleDateString('fr-FR') %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } else { %>
+  <p class="text-muted">Aucune réservation périmée.</p>
+<% } %>
