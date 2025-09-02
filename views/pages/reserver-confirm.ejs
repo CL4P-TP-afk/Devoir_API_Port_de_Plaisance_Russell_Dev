@@ -1,0 +1,19 @@
+<% title = "Confirmation de réservation" %>
+
+<h1>Confirmation de la réservation</h1>
+
+<p><strong>Client :</strong> <%= clientName %></p>
+<p><strong>Bateau :</strong> <%= boatName %></p>
+<p><strong>Utilisateur :</strong> <%= user.name %> (<%= user.email %>)</p>
+<p><strong>Catway :</strong> <%= catway.catwayNumber %> (<%= catway.catwayType %>)</p>
+<p><strong>Date de début :</strong> <%= new Date(startDate).toLocaleDateString('fr-FR') %></p>
+<p><strong>Date de fin :</strong> <%= new Date(endDate).toLocaleDateString('fr-FR') %></p>
+
+<form method="POST" action="/reserver/confirm">
+  <input type="hidden" name="clientName" value="<%= clientName %>">
+  <input type="hidden" name="boatName" value="<%= boatName %>">
+  <input type="hidden" name="startDate" value="<%= startDate %>">
+  <input type="hidden" name="endDate" value="<%= endDate %>">
+  <input type="hidden" name="catwayNumber" value="<%= catway.catwayNumber %>">
+  <button class="btn btn-primary">Confirmer la réservation</button>
+</form>
