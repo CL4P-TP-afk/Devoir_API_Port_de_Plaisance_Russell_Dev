@@ -53,6 +53,7 @@ SECRET_KEY=un_secret_tres_long_et_complexe
 ```bash
 npm run seed:init
 ```
+⚠️ Après npm run seed:init, tous les utilisateurs ont le mot de passe: ChangeMe123! (modifiable dans scripts/seed-init.js)
 
 ### 5. Lancer l’application
 ```bash
