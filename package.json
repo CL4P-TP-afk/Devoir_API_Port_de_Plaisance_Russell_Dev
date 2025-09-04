@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "env-cmd -f ./env/.env node ./bin/www",
     "dev": "env-cmd -f ./env/.env nodemon ./bin/www",
     "prod": "env-cmd -f ./env/.env.prod node ./bin/www",
     "dump": "env-cmd -f ./env/.env node scripts/dump.js",
