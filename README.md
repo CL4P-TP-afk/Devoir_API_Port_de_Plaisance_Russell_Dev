@@ -20,8 +20,7 @@ L’authentification se fait via **JWT** (stocké dans un cookie `httpOnly` ou d
 
 - **Version Production (privée – déployée)**  
   → Déployée automatiquement sur **Render**  
-  → URL : https://devoir-api-port-de-plaisance-russell-prod.onrender.com  
-  → Contient les vraies variables d’environnement (MongoDB Atlas, SECRET_KEY, etc.)  
+  → URL : https://devoir-api-port-de-plaisance-russell-prod.onrender.com    
   → Accessible avec des comptes **user** et **admin** fournis pour les tests.  
 
 ---
