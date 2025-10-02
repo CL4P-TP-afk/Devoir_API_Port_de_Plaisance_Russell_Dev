@@ -19,9 +19,9 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto">
         <% if (user?.role === 'admin') { %>
-          <li class="nav-item"><a class="nav-link" href="/catways">Catways</a></li>
-          <li class="nav-item"><a class="nav-link" href="/users">Utilisateurs</a></li>
           <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/catways">Catways</a></li>
+          <li class="nav-item"><a class="nav-link" href="/users">Utilisateurs</a></li>          
           <li class="nav-item"><a class="nav-link" href="/reserver">Réserver</a></li>
         <% } %>
         <% if (user) { %>
