@@ -2,7 +2,24 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-// Traitement de la connexion (depuis le formulaire de la page d’accueil "/")
+/**
+ * Authentification (formulaire de la page d’accueil "/")
+ * ------------------------------------------------------
+ * - Normalise l’email (trim + lowercase)
+ * - Vérifie l’existence de l’utilisateur et la correspondance du mot de passe
+ * - Génère un JWT (payload minimal : { user: { id, name, email, role } })
+ * - Dépose le cookie `token` (httpOnly, sameSite=lax ; secure en production)
+ * - Redirige :
+ *    - admin   -> /dashboard
+ *    - user    -> /user-dashboard
+ *
+ * En cas d’erreur d’identification, renvoie la page de login avec message HTML.
+ *
+ * @async
+ * @param {*} req - Requête Express (body: { email, password })
+ * @param {*} res - Réponse Express (redirige ou render)
+ * @returns {Promise<void>} Aucune valeur (redirige ou rend une vue)
+ */
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const emailNorm = (email || '').trim().toLowerCase();
@@ -28,18 +45,27 @@ exports.login = async (req, res) => {
 
     if (user.role === 'admin') {
       res.redirect('/dashboard');
-    }else{
+    } else {
       res.redirect('/user-dashboard');
     }
-    
+
   } catch (e) {
     console.error("Erreur login:", e);
     res.render('pages/index', { error: "Erreur lors de la connexion" });
   }
 };
 
-// Déconnexion
-exports.logout = (req, res) => {
+/**
+ * Déconnexion
+ * -----------
+ * - Supprime le cookie `token`
+ * - Redirige vers la page d’accueil `/`
+ *
+ * @param {*} _req - Requête Express (non utilisée)
+ * @param {*} res - Réponse Express (redirige)
+ * @returns {void}
+ */
+exports.logout = (_req, res) => {
   res.clearCookie('token');
   res.redirect('/');
 };

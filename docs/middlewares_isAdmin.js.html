@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: middlewares/isAdmin.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: middlewares/isAdmin.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// middlewares/isAdmin.js
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = process.env.SECRET_KEY;
+
+/**
+ * Représentation minimale d'un utilisateur injecté par le JWT.
+ * @typedef {Object} JwtUser
+ * @property {string} id
+ * @property {string} name
+ * @property {string} email
+ * @property {"admin"|"user"} role
+ */
+
+/**
+ * Payload JWT attendu (la propriété `user` peut être absente).
+ * @typedef {Object} JwtPayload
+ * @property {JwtUser} [user]
+ */
+
+/**
+ * Locals de la réponse (optionnellement enrichis avec l'utilisateur).
+ * @typedef {Object} Locals
+ * @property {JwtUser} [user]
+ */
+
+/**
+ * Représentation minimale d'une Request pour JSDoc (suffisant pour ce middleware).
+ * @typedef {Object} Request
+ * @property {Object.&lt;string, string>} [headers]
+ * @property {Object.&lt;string, string>} [cookies]
+ * @property {JwtUser} [user]
+ */
+
+/**
+ * Représentation minimale d'une Response pour JSDoc (suffisant pour ce middleware).
+ * @typedef {Object} Response
+ * @property {function(number): Response} status
+ * @property {function(Object): Response} json
+ * @property {Locals} locals
+ */
+
+/**
+ * Type fonction NextFunction (callback Express).
+ * @callback NextFunction
+ * @returns {void}
+ */
+
+/**
+ * Middleware qui exige un utilisateur authentifié avec rôle **admin**.
+ * - Cherche un JWT dans `cookie.token` ou l'en-tête `Authorization: Bearer &lt;jwt>`.
+ * - Décode le jeton avec `SECRET_KEY`.
+ * - Vérifie `user.role === 'admin'`.
+ * - Injecte `req.user` et `res.locals.user` si OK.
+ *
+ * Réponses d'erreur :
+ * - `401 { message: 'Token manquant' }` si aucun jeton
+ * - `401 { message: 'Token invalide' }` si vérification échoue
+ * - `403 { message: 'Accès interdit : admin uniquement' }` si rôle ≠ admin
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns {void}
+ */
+module.exports = function isAdmin(req, res, next) {
+  /** @type {string|undefined} */
+  let token = (req.cookies &amp;&amp; req.cookies.token) || (req.headers &amp;&amp; req.headers['authorization']);
+
+  // Authorization: Bearer &lt;jwt>
+  if (token &amp;&amp; typeof token === 'string' &amp;&amp; token.startsWith('Bearer ')) {
+    token = token.slice(7);
+  }
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token manquant' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    /** @type {JwtPayload} */
+    const payload = decoded;
+
+    const user = payload &amp;&amp; payload.user;
+
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ message: 'Accès interdit : admin uniquement' });
+    }
+
+    // Injection dans req &amp; res.locals (comme checkJWT)
+    req.user = user;
+    res.locals.user = user;
+
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Token invalide' });
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#buildAllowedCatwaysByResId">buildAllowedCatwaysByResId</a></li><li><a href="global.html#buildCatwayLookups">buildCatwayLookups</a></li><li><a href="global.html#checkJWT">checkJWT</a></li><li><a href="global.html#confirmReservationPage">confirmReservationPage</a></li><li><a href="global.html#decodeUser">decodeUser</a></li><li><a href="global.html#delete">delete</a></li><li><a href="global.html#deleteReservation">deleteReservation</a></li><li><a href="global.html#finalizeReservation">finalizeReservation</a></li><li><a href="global.html#getAll">getAll</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#initClientDbConnection">initClientDbConnection</a></li><li><a href="global.html#isAuthenticated">isAuthenticated</a></li><li><a href="global.html#listAvailableCatways">listAvailableCatways</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#renderDashboard">renderDashboard</a></li><li><a href="global.html#searchByName">searchByName</a></li><li><a href="global.html#searchByNumber">searchByNumber</a></li><li><a href="global.html#searchReservationByClient">searchReservationByClient</a></li><li><a href="global.html#showForm">showForm</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#updateReservation">updateReservation</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Oct 07 2025 10:03:55 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

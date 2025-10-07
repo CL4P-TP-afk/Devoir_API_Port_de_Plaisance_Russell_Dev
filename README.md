@@ -16,12 +16,14 @@ L’authentification se fait via **JWT** (stocké dans un cookie `httpOnly` ou d
 
 - **Version Développement (publique – ce repo)**  
   → Exécution locale : http://localhost:3000  
-  → Sert de support pédagogique, sans secrets sensibles dans le code.  
+  → Sert de support pédagogique, sans secrets sensibles dans le code.
+  → Documentation du code avec JSdoc
 
 - **Version Production (privée – déployée)**  
   → Déployée automatiquement sur **Render**  
   → URL : https://devoir-api-port-de-plaisance-russell-prod.onrender.com    
-  → Accessible avec des comptes **user** et **admin** fournis pour les tests.  
+  → Accessible avec des comptes **user** et **admin** fournis pour les tests.
+  → Pas documentation du code avec JSdoc pour ne pas alourdir le déploiement et garder la prod légère.  
 
 ---
 ## 🚀 Installation & Lancement
@@ -32,6 +34,7 @@ git clone https://github.com/CL4P-TP-afk/Devoir_API_Port_de_Plaisance_Russell_De
 ```
 
 ### 2. Installer les dépendances
++ ⚠️ vérifier que vous êtes bien a la racine du projet !
 ```bash
 npm install
 ```
@@ -223,3 +226,25 @@ npm run dump
 + Validation de toutes les entrées côté serveur (Mongoose + services).
 
 + Mot de passe jamais stocké en clair (toujours hashé).
+
+## 📘 Documentation du code (JSDoc)
+La documentation interne du code est générée automatiquement grâce à JSDoc.
+ ### 🔧 Générer la doc :
+```bash
+npm run docs:jsdoc
+```
+ + Utilise la configuration jsdoc.json à la racine.
+ + La sortie est générée dans : ./docs/jsdoc
+ ### 🔎 Consulter la doc en local : 
+```bash
+npm run docs:serve
+```
+ + Un petit serveur Express sert la doc sur : http://localhost:3001/dev-docs
+ + Le fichier d’entrée côté disque est : ./docs/jsdoc/index.html
+
+ ### 💡 Notes :
+ + Les commentaires JSDoc couvrent routes, services, middlewares et models.
+
+ + Les endpoints HTML (vues EJS) et les redirections sont documentés (types, effets, messages).
+
+ + La doc JSDoc est destinée au développement ; elle n’est pas publiée sur l’environnement Production (Render).

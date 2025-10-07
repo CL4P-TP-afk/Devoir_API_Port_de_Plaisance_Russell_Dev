@@ -4,7 +4,17 @@ const User = require('../models/user');
 
 /* ----------------------------- Helpers ----------------------------- */
 
-/** Construit une map { catwayNumber -> catwayType } et { catwayNumber -> isReservable } */
+/**
+ * Construit deux tables de correspondance à partir d’une liste de catways.
+ *
+ * - `typeByNumber` : Map (clé = number, valeur = "long"|"short")
+ * - `reservableByNumber` : Map (clé = number, valeur = boolean)
+ *
+ * @param {Array<*>} catways
+ * @returns {Object} objets Map de lookup
+ * @returns {Map} return.typeByNumber
+ * @returns {Map} return.reservableByNumber
+ */
 function buildCatwayLookups(catways) {
   const typeByNumber = new Map();
   const reservableByNumber = new Map();
@@ -16,10 +26,17 @@ function buildCatwayLookups(catways) {
 }
 
 /**
- * Construit une map { reservationId -> [catways filtrés] } :
- * - même type que le catway actuel de la réservation
- * - seulement catways réservable = true
- * - triés par catwayNumber
+ * Construit un index des catways autorisés **par réservation** :
+ * - uniquement les catways du **même type** que celui actuellement réservé,
+ * - uniquement les catways **réservables**,
+ * - triés par `catwayNumber`.
+ *
+ * Résultat : `{ [reservationId: string]: Catway[] }`
+ *
+ * @param {Array<*>} allCatways - Tous les catways (pas seulement les réservable)
+ * @param {Array<*>} allReservations
+ * @param {Map} typeByNumber
+ * @returns {Object<string, Array<*>>}
  */
 function buildAllowedCatwaysByResId(allCatways, allReservations, typeByNumber) {
   const byType = {
@@ -29,17 +46,29 @@ function buildAllowedCatwaysByResId(allCatways, allReservations, typeByNumber) {
 
   const allowed = {};
   allReservations.forEach(r => {
-    const currentType = typeByNumber.get(r.catwayNumber); // type du catway actuel de la résa
+    const currentType = typeByNumber.get(r.catwayNumber);
     if (currentType === 'long') allowed[r._id] = byType.long;
     else if (currentType === 'short') allowed[r._id] = byType.short;
-    else allowed[r._id] = []; // au cas improbable où on ne trouve pas le type
+    else allowed[r._id] = [];
   });
   return allowed;
 }
 
 /* --------------------------- Pages /reserver --------------------------- */
 
-// Formulaire initial
+/**
+ * GET /reserver
+ * Affiche la page d’assistance admin : formulaire (recherche de disponibilités) +
+ * listes des réservations (En cours / À venir / Terminées).
+ * Fournit aussi :
+ *  - `allCatways` : catways **réservable** (pour création),
+ *  - `allowedCatwaysByResId` : catways autorisés **par réservation** (même type).
+ *
+ * @async
+ * @param {*} req - Requête Express
+ * @param {*} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 exports.showForm = async (req, res) => {
   const users = await User.find({}, 'name email').sort({ name: 1 });
   const allReservations = await Reservation.find({}).sort({ startDate: 1 });
@@ -73,8 +102,19 @@ exports.showForm = async (req, res) => {
   });
 };
 
-
-// Liste les catways disponibles après soumission du formulaire
+/**
+ * POST /reserver
+ * Traite le formulaire de recherche de disponibilités :
+ * - champs requis : clientName, boatName, catwayType, startDate, endDate, userId
+ * - filtre par type + période
+ * - exclut les catways en conflit de dates
+ * - ré-affiche la page avec `availableCatways`
+ *
+ * @async
+ * @param {*} req - Requête Express
+ * @param {*} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 exports.listAvailableCatways = async (req, res) => {
   const { clientName, boatName, catwayType, startDate, endDate, userId } = req.body;
   const formData = { clientName, boatName, catwayType, startDate, endDate, userId };
@@ -138,8 +178,16 @@ exports.listAvailableCatways = async (req, res) => {
   });
 };
 
-
-// Page de confirmation
+/**
+ * GET /reserver/confirm
+ * Page de confirmation de réservation : récap client/bateau/période/catway.
+ * Paramètres reçus en querystring.
+ *
+ * @async
+ * @param {*} req - Requête Express
+ * @param {*} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 exports.confirmReservationPage = async (req, res) => {
   const { clientName, boatName, startDate, endDate, userId, catwayNumber } = req.query;
   const user = await User.findById(userId);
@@ -159,7 +207,18 @@ exports.confirmReservationPage = async (req, res) => {
   });
 };
 
-// Création finale
+/**
+ * POST /reserver/confirm
+ * Création finale de la réservation (après confirmation) :
+ * - re-vérifie l’absence de conflit sur la période sélectionnée
+ * - insère la réservation
+ * - redirige vers /dashboard avec message
+ *
+ * @async
+ * @param {*} req - Requête Express
+ * @param {*} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 exports.finalizeReservation = async (req, res) => {
   const { clientName, boatName, startDate, endDate, catwayNumber } = req.body;
 
@@ -194,7 +253,16 @@ exports.finalizeReservation = async (req, res) => {
   }
 };
 
-// Recherche d'une réservation par nom client
+/**
+ * GET /reserver/search
+ * Recherche de réservations par `clientName` (insensible à la casse).
+ * Ré-affiche la page /reserver avec `searchResults` + filtres habituels.
+ *
+ * @async
+ * @param {*} req - Requête Express
+ * @param {*} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 exports.searchReservationByClient = async (req, res) => {
   const query = req.query.clientName || '';
   const users = await User.find({}, 'name email').sort({ name: 1 });
@@ -231,7 +299,19 @@ exports.searchReservationByClient = async (req, res) => {
   });
 };
 
-// Modifier une réservation
+/**
+ * PUT /reserver/:id
+ * Met à jour une réservation :
+ * - vérifie que le **nouveau catway** a le **même type** que l’actuel
+ * - vérifie qu’il est **réservable**
+ * - refuse si **chevauchement** sur la nouvelle période
+ * - met à jour `{ boatName, startDate, endDate, catwayNumber }`
+ *
+ * @async
+ * @param {*} req - params.id = ObjectId réservation
+ * @param {*} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 exports.updateReservation = async (req, res) => {
   const { id } = req.params;
   const { boatName, startDate, endDate, catwayNumber } = req.body;
@@ -286,7 +366,16 @@ exports.updateReservation = async (req, res) => {
   }
 };
 
-// Supprimer une réservation
+/**
+ * DELETE /reserver/:id
+ * Supprime une réservation par son `_id`.
+ * Redirige vers /reserver avec un message.
+ *
+ * @async
+ * @param {*} req - params.id = ObjectId réservation
+ * @param {*} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 exports.deleteReservation = async (req, res) => {
   try {
     await Reservation.findByIdAndDelete(req.params.id);
