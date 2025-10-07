@@ -6,6 +6,22 @@ const getMongoUri = () => {
   return process.env.MONGO_URI || process.env.URL_MONGO || '';
 };
 
+/**
+ * Connexion MongoDB (Mongoose)
+ * -------------------------------------------
+ * Utilise les variables d'environnement :
+ * - MONGO_URI (ou URL_MONGO en fallback)
+ * - MONGO_DBNAME (optionnel si non présent dans l'URI)
+ *
+ * Exporte :
+ * - initClientDbConnection(): Promise<void>
+ *
+ * Usage :
+ *   const mongodb = require('./db/mongo');
+ *   mongodb.initClientDbConnection();
+ */
+
+
 exports.initClientDbConnection = async () => {
   const uri = getMongoUri();
 

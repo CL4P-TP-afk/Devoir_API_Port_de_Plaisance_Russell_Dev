@@ -1,0 +1,19 @@
+{
+  "source": {
+    "include": ["app.js", "routes", "services", "middlewares", "models", "db"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(node_modules/|public/|views/|scripts/|seed|seed-init)"
+  },
+  "plugins": [],
+  "opts": {
+    "encoding": "utf8",
+    "destination": "./docs",
+    "recurse": true,
+    "verbose": false,
+    "readme": "./README.md"
+  },
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": false
+  }
+}

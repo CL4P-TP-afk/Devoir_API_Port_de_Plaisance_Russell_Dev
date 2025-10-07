@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>🌊 API Port de Plaisance Russell</h1>
+<p><a href="https://devoir-api-port-de-plaisance-russell-prod.onrender.com"><img src="https://img.shields.io/badge/%F0%9F%9A%80%20Demo%20Render-Visit-blue?style=for-the-badge" alt="🚀 Demo Render"></a></p>
+<p>Application <strong>Node.js + Express + MongoDB</strong> pour la gestion :</p>
+<ul>
+<li>des <strong>catways</strong> (emplacements bateaux),</li>
+<li>des <strong>réservations</strong>,</li>
+<li>des <strong>utilisateurs</strong> (avec rôles <code>admin</code> / <code>user</code>),</li>
+<li>avec une <strong>interface HTML/EJS</strong> intégrée <strong>et</strong> une <strong>documentation Swagger</strong>.</li>
+</ul>
+<p>L’authentification se fait via <strong>JWT</strong> (stocké dans un cookie <code>httpOnly</code> ou dans l’en-tête <code>Authorization: Bearer &lt;token&gt;</code>).</p>
+<hr>
+<h2>📌 Versions disponibles</h2>
+<ul>
+<li>
+<p><strong>Version Développement (publique – ce repo)</strong><br>
+→ Exécution locale : http://localhost:3000<br>
+→ Sert de support pédagogique, sans secrets sensibles dans le code.</p>
+</li>
+<li>
+<p><strong>Version Production (privée – déployée)</strong><br>
+→ Déployée automatiquement sur <strong>Render</strong><br>
+→ URL : https://devoir-api-port-de-plaisance-russell-prod.onrender.com<br>
+→ Accessible avec des comptes <strong>user</strong> et <strong>admin</strong> fournis pour les tests.</p>
+</li>
+</ul>
+<hr>
+<h2>🚀 Installation &amp; Lancement</h2>
+<h3>1. Cloner le projet</h3>
+<pre class="prettyprint source lang-bash"><code>git clone https://github.com/CL4P-TP-afk/Devoir_API_Port_de_Plaisance_Russell_Dev
+</code></pre>
+<h3>2. Installer les dépendances</h3>
+<pre class="prettyprint source lang-bash"><code>npm install
+</code></pre>
+<h3>3. Configurer les variables d’environnement</h3>
+<pre class="prettyprint source lang-bash"><code>Créer un fichier env/.env (ou adapter ton .env si tu utilises env-cmd) :
+
+env
+PORT=3000
+MONGO_URI=mongodb+srv://&lt;user>:&lt;password>@&lt;cluster>/&lt;db>?retryWrites=true&w=majority
+MONGO_DBNAME=apinode
+SECRET_KEY=un_secret_tres_long_et_complexe
+</code></pre>
+<h3>4. Importation des jeux de données initiales</h3>
+<ul>
+<li>⚠️ Réinitialise complètement la base et recharge le jeu de données immuable seed-init/ :</li>
+</ul>
+<pre class="prettyprint source lang-bash"><code>npm run seed:init
+</code></pre>
+<p>⚠️ Après npm run seed:init, tous les utilisateurs ont le mot de passe: ChangeMe123! (modifiable dans scripts/seed-init.js)</p>
+<h3>5. Lancer l’application</h3>
+<pre class="prettyprint source lang-bash"><code>npm start
+</code></pre>
+<p>⚠️ Nécessite une base MongoDB locale ou distante.</p>
+<h2>📂 Structure du projet</h2>
+<pre class="prettyprint source lang-bash"><code>.
+├── app.js                # Point d’entrée Express
+├── bin/www               # Lanceur serveur
+├── db/mongo.js           # Connexion MongoDB
+├── routes/               # Définition des routes (API + vues HTML)
+│   ├── auth.js
+│   ├── catways.js
+│   ├── reservations.js
+│   ├── users.js
+│   ├── dashboard.js
+│   ├── reserver.js
+│   └── docs.js
+├── models/               # Schémas Mongoose (User, Catway, Reservation)
+├── services/             # Logique métier (validation, règles)
+├── middlewares/          # Authentification & rôles
+├── views/                # Templates EJS (UI)
+├── swagger.yaml          # Documentation OpenAPI 3
+├── swagger.js            # Branche Swagger sur /api-docs
+└── public/               # Fichiers statiques (CSS/JS)
+</code></pre>
+<h2>🔑 Authentification &amp; Rôles</h2>
+<p><strong>JWT</strong> signé avec <strong>SECRET_KEY</strong>.</p>
+<ul>
+<li>
+<p>Stocké dans cookie <code>httpOnly</code> ou envoyé dans <code>Authorization: Bearer</code> <jwt>.</p>
+</li>
+<li>
+<p>Rôles :</p>
+<ol>
+<li>
+<p>admin : accès complet (gestion utilisateurs, catways, réservations).</p>
+</li>
+<li>
+<p>user : accès limité (consultation et création de réservations).</p>
+</li>
+</ol>
+</li>
+</ul>
+<h2>📜 Documentation API</h2>
+<ul>
+<li>
+<p>Version intégrée : http://localhost:3000/docs
+(affiche Swagger dans une page EJS avec bouton retour vers l’UI).</p>
+</li>
+<li>
+<p>Version Swagger UI brute : http://localhost:3000/api-docs
+(pleine page Swagger, directement générée depuis swagger.yaml).</p>
+</li>
+</ul>
+<h2>🧭 Endpoints principaux</h2>
+<ol>
+<li>
+<h3>🔐 Auth</h3>
+<ul>
+<li>
+<p>POST /auth/login → connexion (JWT + cookie, redirection vers dashboard).</p>
+</li>
+<li>
+<p>GET /auth/logout → déconnexion (suppression cookie, retour à l’accueil).</p>
+</li>
+</ul>
+</li>
+<li>
+<h3>⛴️ Catways</h3>
+<ul>
+<li>
+<p>GET /catways → liste des catways (HTML).</p>
+</li>
+<li>
+<p>POST /catways → créer un catway.</p>
+</li>
+<li>
+<p>PUT /catways/{id} → modifier état/réservabilité.</p>
+</li>
+<li>
+<p>DELETE /catways/{id} → supprimer un catway.</p>
+</li>
+</ul>
+</li>
+<li>
+<h3>📅 Réservations</h3>
+<ul>
+<li>
+<p>GET /catways/{id}/reservations → liste des réservations d’un catway.</p>
+</li>
+<li>
+<p>POST /catways/{id}/reservations → créer une réservation.</p>
+</li>
+<li>
+<p>PUT /catways/{id}/reservations/{idReservation} → modifier une réservation.</p>
+</li>
+<li>
+<p>DELETE /catways/{id}/reservations/{idReservation} → supprimer une réservation.</p>
+</li>
+</ul>
+</li>
+<li>
+<h3>👤 Utilisateurs</h3>
+<ul>
+<li>
+<p>GET /users → liste/gestion des utilisateurs (HTML).</p>
+</li>
+<li>
+<p>POST /users → créer un utilisateur.</p>
+</li>
+<li>
+<p>PUT /users/{id} → mettre à jour un utilisateur.</p>
+</li>
+<li>
+<p>DELETE /users/{id} → supprimer un utilisateur.</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2>🛡️ Règles métier principales</h2>
+<ol>
+<li>
+<h3>Catways</h3>
+<ul>
+<li>
+<p>catwayNumber unique et ≥ 1.</p>
+</li>
+<li>
+<p>catwayType ∈ {long, short}.</p>
+</li>
+<li>
+<p>isReservable = true/false (par défaut true).</p>
+</li>
+</ul>
+</li>
+<li>
+<h3>Réservations</h3>
+<ul>
+<li>
+<p>clientName doit exister dans User.name.</p>
+</li>
+<li>
+<p>Refus si catway.isReservable === false.</p>
+</li>
+<li>
+<p>Refus si chevauchement de dates pour un même catway.</p>
+</li>
+<li>
+<p>Dates : format date ou date-time.</p>
+</li>
+</ul>
+</li>
+<li>
+<h3>Utilisateurs</h3>
+<ul>
+<li>
+<p>name ≥ 3 caractères.</p>
+</li>
+<li>
+<p>email valide et unique.</p>
+</li>
+<li>
+<p>password fort (minuscule + majuscule + chiffre).</p>
+</li>
+<li>
+<p>role ∈ {admin, user}.</p>
+</li>
+<li>
+<p>password hashé avec bcrypt.</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2>🧪 Scénario de test rapide</h2>
+<ul>
+<li>
+<p>Créer un compte admin (/users via interface ou seed).</p>
+</li>
+<li>
+<p>Connexion : /auth/login → cookie JWT.</p>
+</li>
+<li>
+<p>Dashboard : /dashboard → navigation vers menus.</p>
+</li>
+<li>
+<p>Créer un catway : /catways (ex. n°1, type short).</p>
+</li>
+<li>
+<p>Créer une réservation : /catways/{id}/reservations.</p>
+</li>
+<li>
+<p>Vérifier qu’un chevauchement de dates est refusé.</p>
+</li>
+<li>
+<p>Consulter la doc : /docs ou /api-docs.</p>
+</li>
+</ul>
+<h2>🛠️ Commandes utiles</h2>
+<h3>Lancer avec env-cmd ( env-cmd -f ./env/.env nodemon ./bin/www ) :</h3>
+<pre class="prettyprint source lang-bash"><code>env-cmd -f ./env/.env nodemon ./bin/www
+</code></pre>
+<h3>Lancer en dev avec nodemon ( env-cmd -f ./env/.env.dev nodemon ./bin/www ) :</h3>
+<pre class="prettyprint source lang-bash"><code>npm run dev
+</code></pre>
+<h3>Lancer en prod avec nodemon ( env-cmd -f ./env/.env.prod nodemon ./bin/www ) :</h3>
+<pre class="prettyprint source lang-bash"><code>npm run prod
+</code></pre>
+<h3>Import/export de données :</h3>
+<ul>
+<li>importer sans rien effacer (ajoute/ignore doublons) :</li>
+</ul>
+<pre class="prettyprint source lang-bash"><code>npm run seed
+</code></pre>
+<ul>
+<li>importer en purgeant (⚠️→ reset complet) :</li>
+</ul>
+<pre class="prettyprint source lang-bash"><code>npm run seed:reset
+</code></pre>
+<ul>
+<li>Importer le jeu de secours immuable seed-init/ :</li>
+</ul>
+<pre class="prettyprint source lang-bash"><code>npm run seed:init
+</code></pre>
+<ul>
+<li>Sauvegarder l’état actuel de la base vers JSON (⚠️→ écrase seed/*.json avec les données en DB) :</li>
+</ul>
+<pre class="prettyprint source lang-bash"><code>npm run dump
+</code></pre>
+<h2>📌 Notes sécurité</h2>
+<ul>
+<li>
+<p><strong>JWT</strong> stocké en cookie <code>httpOnly</code> → limite les risques <strong>XSS</strong>.</p>
+</li>
+<li>
+<p>Vérification stricte des rôles (isAdmin) sur routes sensibles.</p>
+</li>
+<li>
+<p>Validation de toutes les entrées côté serveur (Mongoose + services).</p>
+</li>
+<li>
+<p>Mot de passe jamais stocké en clair (toujours hashé).</p>
+</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>app.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">app.jsPoint d’entrée de l’application Express.Rôle :- charge les middlewares globaux (logger, CORS, cookies, methodOverride, EJS layouts),- expose Swagger UI sur `/api-docs`,- monte les routeurs applicatifs :  - `/auth` (authentification),  - `/users`, `/catways`, `/catways/:id/reservations`,  - `/dashboard`, `/user-dashboard`, `/reserver`,  - `/docs` (page docs EJS), `/healthz` (sonde),- fournit un fallback 404 JSON pour l’API (sans casser les vues).Note : `app.set('trust proxy', 1)` est activé car Render est derrière un proxy.Config via variables d’environnement (voir README).</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="app.js.html">app.js</a>, <a href="app.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#buildAllowedCatwaysByResId">buildAllowedCatwaysByResId</a></li><li><a href="global.html#buildCatwayLookups">buildCatwayLookups</a></li><li><a href="global.html#checkJWT">checkJWT</a></li><li><a href="global.html#confirmReservationPage">confirmReservationPage</a></li><li><a href="global.html#decodeUser">decodeUser</a></li><li><a href="global.html#delete">delete</a></li><li><a href="global.html#deleteReservation">deleteReservation</a></li><li><a href="global.html#finalizeReservation">finalizeReservation</a></li><li><a href="global.html#getAll">getAll</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#initClientDbConnection">initClientDbConnection</a></li><li><a href="global.html#isAuthenticated">isAuthenticated</a></li><li><a href="global.html#listAvailableCatways">listAvailableCatways</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#renderDashboard">renderDashboard</a></li><li><a href="global.html#searchByName">searchByName</a></li><li><a href="global.html#searchByNumber">searchByNumber</a></li><li><a href="global.html#searchReservationByClient">searchReservationByClient</a></li><li><a href="global.html#showForm">showForm</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#updateReservation">updateReservation</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Oct 07 2025 10:03:55 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

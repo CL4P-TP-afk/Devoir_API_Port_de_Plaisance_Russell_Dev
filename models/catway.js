@@ -1,3 +1,17 @@
+/**
+ * Modèle Catway
+ * -------------
+ * Un emplacement (catway) au port.
+ *
+ * @typedef {Object} Catway
+ * @property {string} _id         - ObjectId Mongo
+ * @property {number} catwayNumber - Numéro unique (>= 1)
+ * @property {'long'|'short'} catwayType - Type d’emplacement
+ * @property {string} [catwayState] - État libre (texte)
+ * @property {boolean} isReservable - Est-ce réservable ? (def. true)
+ */
+
+
 const mongoose = require('mongoose');
 
 const catwaySchema = mongoose.Schema(

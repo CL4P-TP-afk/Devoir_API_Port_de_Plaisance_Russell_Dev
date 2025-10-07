@@ -9,10 +9,11 @@
     "dump": "env-cmd -f ./env/.env node scripts/dump.js",
     "seed": "env-cmd -f ./env/.env node scripts/seed.js --mode=safe",
     "seed:init": "env-cmd -f ./env/.env node scripts/seed-init.js",
-    "seed:reset": "env-cmd -f ./env/.env node scripts/seed.js --mode=reset"
+    "seed:reset": "env-cmd -f ./env/.env node scripts/seed.js --mode=reset",
+    "docs:jsdoc": "jsdoc -c jsdoc.json",
+    "docs:serve": "node -e \"const express=require('express');const app=express();app.use('/dev-docs',express.static('docs/jsdoc'));app.listen(3001,()=>console.log('Docs sur http://localhost:3001/dev-docs'));\""
   },
   "dependencies": {
-    
     "bcryptjs": "^3.0.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -25,13 +26,13 @@
     "method-override": "^3.0.0",
     "mongoose": "^8.16.0",
     "morgan": "~1.9.1",
-    
-    
     "swagger-ui-express": "^5.0.1",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
+    "clean-jsdoc-theme": "^4.3.0",
     "env-cmd": "^10.1.0",
+    "jsdoc": "^4.0.4",
     "nodemon": "^3.1.10"
   }
 }
