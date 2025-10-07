@@ -248,3 +248,30 @@ npm run docs:serve
  + Les endpoints HTML (vues EJS) et les redirections sont documentés (types, effets, messages).
 
  + La doc JSDoc est destinée au développement ; elle n’est pas publiée sur l’environnement Production (Render).
+
+### 🎁 Bonus – Extension “Espace Utilisateur”
+
+Dans un souci d’amélioration et d’évolution du projet, j’ai pris l’initiative d’ajouter une ouverture contrôlée de l’API aux utilisateurs du port via un rôle user.
+
+ #### 🔐 Objectif
+
+Permettre aux clients du port (non administrateurs) de se connecter à l’application grâce à un compte user.
+Ce rôle n’était pas demandé dans le cahier des charges, mais il prépare une extension naturelle du système.
+
+ #### 🧭 Évolutions envisagées
+
+Dans un cadre d’amélioration future, cette ouverture pourrait permettre :
+
+ + la consultation et la modification du profil utilisateur ;
+
+ + la création ou modification de demandes de réservation en ligne ;
+
+ + une gestion personnelle de l’historique des réservations.
+
+ #### 🚧 État actuel
+
+ + Le rôle user existe dans la base et peut se connecter.
+
+ + L’espace correspondant (/user-dashboard) affiche actuellement une page d’attente indiquant que la fonctionnalité est en construction.
+
+ + Les droits précis (lecture/écriture sur certaines routes) restent à définir dans une future version.
